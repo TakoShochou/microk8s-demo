@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document</title>
+<H1>Result</H1>
+<pre><code id="result"></code></pre>
+
+<script>
+    (async () => {
+        const api = 'http://localhost:30030/'
+        fetch(api)
+            .then(tee)
+            .then(res => res.json())
+            .then(result)
+            .catch(e => { console.error(e); result(e) })
+        function tee (res) {
+            console.log(res)
+            return res
+        }
+        function result (data) {
+            document.querySelector('#result').innerHTML = JSON.stringify(data, null, 4)
+        }
+    })()
+</script>
