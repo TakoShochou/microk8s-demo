@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
@@ -13,16 +14,32 @@ import (
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "READY")
-	})
-
-	mux.HandleFunc("/healthy", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "OK")
-	})
-
+	mux.HandleFunc("/ready", withLogging(withCORS(withJSON(handleReady))))
+	mux.HandleFunc("/healthy", withLogging(withCORS(withJSON(handleHealthy))))
+	mux.HandleFunc("/kill", handleKill)
 	mux.HandleFunc("/", withLogging(withCORS(withJSON(handleRoot))))
 	http.ListenAndServe(":3000", mux)
+}
+
+func handleReady(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, `{"status": "READY"}`)
+}
+
+func handleHealthy(w http.ResponseWriter, r *http.Request) {
+	if rand.Intn(2) == 0 {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, `{"status": "HEALTHY"}`)
+	} else {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, `{"status": "NOT HEALTHY"}`)
+	}
+}
+
+func handleKill(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, `{"status": "terminating"}`)
+	defer os.Exit(1)
 }
 
 func handleRoot(w http.ResponseWriter, r *http.Request) {

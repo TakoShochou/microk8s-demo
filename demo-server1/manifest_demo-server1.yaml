@@ -6,7 +6,7 @@ spec:
   selector: #どのPodを起動するか
     matchLabels:
       app: demo-server1
-  replicas: 2 #レプリカ数（Podの数）
+  replicas: 1
   template: #作成されるPodのテンプレート
     metadata:
       labels:
@@ -17,7 +17,23 @@ spec:
         image: "demo-server1:local"
         imagePullPolicy: Never
         ports:
-        - containerPort: 80 #ポート番号
+        - containerPort: 3000 #ポート番号
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 3000
+          failureThreshold: 3
+          successThreshold: 1
+          periodSeconds: 2
+          initialDelaySeconds: 0
+        livenessProbe:
+          httpGet:
+            path: /healthy
+            port: 3000
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+          periodSeconds: 5
+          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service

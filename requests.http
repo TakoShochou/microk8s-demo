@@ -1,0 +1,14 @@
+@ADDR = http://localhost:30030
+
+
+###
+GET {{ADDR}}/
+
+###
+GET {{ADDR}}/ready
+
+###
+GET {{ADDR}}/healthy
+
+###
+GET {{ADDR}}/kill

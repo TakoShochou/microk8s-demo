@@ -1,4 +1,4 @@
-PHONY: build clean dockerize microk8s.up microk8s.down demo
+.PHONY: build clean dockerize microk8s.up microk8s.down demo
 
 APP_NAME := demo-server1
 
@@ -6,7 +6,7 @@ build:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "$(APP_NAME).exe"
 
 clean:
-	rm -f $(APP_NAME).exe $(APP_NAME).tar
+	- rm -f $(APP_NAME).exe $(APP_NAME).tar
 
 dockerize: build
 	docker build -t $(APP_NAME):local --no-cache --build-arg EXE_FILE=$(APP_NAME).exe .
