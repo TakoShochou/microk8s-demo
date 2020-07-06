@@ -18,22 +18,26 @@ spec:
         imagePullPolicy: Never
         ports:
         - containerPort: 3000 #ポート番号
+        startupProbe:
+          httpGet:
+            path: /healthy
+            port: 3000
+          failureThreshold: 6
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthy
+            port: 3000
+          failureThreshold: 1
+          periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /ready
             port: 3000
           failureThreshold: 3
           successThreshold: 1
-          periodSeconds: 2
-          initialDelaySeconds: 0
-        livenessProbe:
-          httpGet:
-            path: /healthy
-            port: 3000
-          initialDelaySeconds: 10
-          timeoutSeconds: 1
+          initialDelaySeconds: 5
           periodSeconds: 5
-          failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
