@@ -1,0 +1,4 @@
+@ADDR = http://localhost:3001
+
+###
+GET {{ADDR}}/

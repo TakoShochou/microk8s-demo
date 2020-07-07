@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
 	"net"
 	"net/http"
 	"os"
@@ -27,13 +26,8 @@ func handleReady(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleHealthy(w http.ResponseWriter, r *http.Request) {
-	if rand.Intn(2) == 0 {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, `{"status": "HEALTHY"}`)
-	} else {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, `{"status": "NOT HEALTHY"}`)
-	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, `{"status": "HEALTHY"}`)
 }
 
 func handleKill(w http.ResponseWriter, r *http.Request) {

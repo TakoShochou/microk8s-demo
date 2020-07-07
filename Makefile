@@ -1,4 +1,12 @@
-.PHONY: microk8s.up microk8s.down
+.PHONY: clean dockerize microk8s.up microk8s.down
+
+dockerize:
+	$(MAKE) -C ./demo-server1 dockerize
+	$(MAKE) -C ./frontend dockerize
+
+clean:
+	$(MAKE) -C ./demo-server1 clean
+	$(MAKE) -C ./frontend clean
 
 microk8s.up:
 	$(MAKE) -C ./demo-server1 microk8s.up

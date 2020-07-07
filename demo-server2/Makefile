@@ -6,8 +6,8 @@ build:
 
 .PHONY: clean
 clean:
-	- rm -f $(APP_NAME).exe ($APP_NAME).tar
+	- rm -f $(APP_NAME).exe $(APP_NAME).tar
 
 .PHONY: demo
-demo:
-	$(APP_NAME).exe
+demo: build
+	./$(APP_NAME).exe
