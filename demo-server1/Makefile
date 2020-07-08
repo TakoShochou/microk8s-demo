@@ -1,9 +1,19 @@
 .PHONY: build clean dockerize microk8s.up microk8s.down demo
 
+
 APP_NAME = demo-server1
+REGISTRY = localhost:5000
+
+CPU := $(shell lscpu | grep "^Architecture:" | sed -e "s/^Architecture:\s*//")
+ifeq ("$(CPU)", "aarch64")
+ARCH = arm64
+else
+ARCH = amd64
+endif
 
 build:
-	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o "$(APP_NAME).exe"
+	@echo CPU=$(CPU) ARCH=$(ARCH)
+	GOOS=linux GOARCH=$(ARCH) CGO_ENABLED=0 go build -o "$(APP_NAME).exe"
 
 clean:
 	- rm -f $(APP_NAME).exe $(APP_NAME).slim.tar
@@ -12,12 +22,13 @@ clean:
 dockerize: build
 	docker build -t $(APP_NAME) --no-cache --build-arg EXE_FILE=$(APP_NAME).exe .
 	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock dslim/docker-slim build $(APP_NAME)
-	docker rmi $(APP_NAME)
+	docker tag $(APP_NAME).slim $(REGISTRY)/$(APP_NAME).slim
+	docker push $(REGISTRY)/$(APP_NAME).slim
 
 microk8s.up:
 	- $(MAKE) microk8s.down
-	docker save $(APP_NAME).slim -o $(APP_NAME).slim.tar
-	microk8s ctr image import $(APP_NAME).slim.tar
+	#docker save $(APP_NAME).slim -o $(APP_NAME).slim.tar
+	#microk8s ctr image import $(APP_NAME).slim.tar
 	microk8s kubectl apply -f manifest_$(APP_NAME).yaml
 
 microk8s.down:
