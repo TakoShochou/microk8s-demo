@@ -1,18 +1,19 @@
 PHONEY: clean dockerize microk8s.up microk8s.down demo
 
+REGISTRY = localhost:5000
+IMAGE = frontend
+
 clean:
-	- rm -f frontend.tar
-	- docker rmi frontend frontend.slim
+	- rm -f frontend.slim.tar
+	- docker rmi $(IMAGE) $(IMAGE).slim $(REGISTRY)/$(IMAGE).slim
 
 dockerize:
-	docker build -t frontend --no-cache .
-	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock dslim/docker-slim build frontend
-	docker rmi frontend
+	docker build -t $(IMAGE) --no-cache .
+	docker tag $(IMAGE) $(REGISTRY)/$(IMAGE)
+	docker push $(REGISTRY)/frontend
 
 microk8s.up:
 	- $(MAKE) microk8s.down
-	docker save frontend.slim -o frontend.slim.tar
-	microk8s ctr image import frontend.slim.tar
 	microk8s kubectl apply -f manifest_frontend.yaml
 
 microk8s.down:

@@ -14,8 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend-pod
-          image: frontend.slim
-          imagePullPolicy: Never
+          image: localhost:5000/frontend
           ports:
           - containerPort: 80
 ---
