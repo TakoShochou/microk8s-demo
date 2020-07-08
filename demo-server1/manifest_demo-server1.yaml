@@ -14,8 +14,8 @@ spec:
     spec:
       containers:
       - name: "demo-server1-pod"
-        image: "demo-server1.slim"
-        imagePullPolicy: Never
+        image: "localhost:5000/demo-server1.slim"
+        #imagePullPolicy: Never
         ports:
         - containerPort: 3000 #ポート番号
         startupProbe:
